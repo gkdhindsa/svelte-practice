@@ -1,69 +1,52 @@
 <script>
-	import User from './User.svelte';
-	let dataExists=false
-	let id=null
-	let promise1 = Promise.resolve([]);
-	let promise2 = Promise.resolve([]);
-	let disabled1=false
-	
-	
-	async function fetchAllUsers() {
-		const response = await self.fetch('https://jsonplaceholder.typicode.com/users');
+	//https://jsonplaceholder.typicode.com/users //hit this
 
-		if (response.ok) {
-  		return response.json();
-			
-		} else {
-			throw new Error(users);
-		}
+	//https://jsonplaceholder.typicode.com/users/${id} //hit by id
+
+	import User from "./User.svelte";
+
+	let userArray = [];
+	let userData = null;
+	async function getData() {
+		let data = await fetch("https://jsonplaceholder.typicode.com/users");
+		let response = await data.json();
+		userArray = response;
 	}
 
-  function handleClick1() {
-	disabled1=true
-    promise1 = fetchAllUsers();
+	async function getUser(id) {
+		let data = await fetch(
+			`https://jsonplaceholder.typicode.com/users/${id}`
+		);
+		let response = await data.json();
+		userData = response;
 	}
-	async function fetchUserById() {
-		const response = await self.fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
-
-		if (response.ok) {
-  		return response.json();
-			
-		} else {
-			throw new Error(users);
-		}
-	}
-
-
-	function handleClick2() {
-	
-    promise2 = fetchUserById();
-	}
-
 </script>
 
-<main>
-	<button on:click={handleClick1} disabled={disabled1} >Fetch Users</button>
-	{#await promise1}
-	<p>...waiting</p>
-	{:then  users}
-		{#each users as user}
-			<User {...user}/>
-		{/each}
-	{/await}
-	<br>
-	<input type="number" placeholder="Enter Id" bind:value={id} required/>
-	<input type="submit" on:click={handleClick2}  value="Find user with id"/>
-	{#await promise2}
-		<p>waiting...</p>
-	{:then data}
-		<User {...data}/>
-	{/await}
-	
-	
+<button on:click={getData}>Fetch users</button>
 
+<main>
+	<div>
+		<ul>
+			{#each userArray as { id, name }}
+				<li>
+					<!-- getUser(user.id) -->
+					<button on:click={() => getUser(id)}>
+						Fetch {name}
+					</button>
+				</li>
+			{/each}
+		</ul>
+	</div>
+
+	{#if userData}
+		<div>
+			<User {...userData} />
+		</div>
+	{/if}
 </main>
 
 <style>
-	
-	
+	main {
+		display: flex;
+	}
 </style>

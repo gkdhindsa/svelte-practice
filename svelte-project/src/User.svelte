@@ -13,3 +13,11 @@
         <p>{address.city}</p>
     </div>
 </main>
+
+
+<style>
+
+    div {
+        color: blueviolet;
+    }
+</style>
